@@ -2199,32 +2199,53 @@ input:focus-visible {
 
 @media (max-width: 520px) {
     .welcome-screen {
-        min-height: 100svh;
-        padding: 38px 26px;
+        height: 100vh;
+        height: 100dvh;
+        min-height: 0;
+        padding: 8px 22px;
+        overflow: hidden;
     }
 
     .welcome-screen > .welcome-content > .eyebrow {
-        margin-bottom: 76px;
+        margin-bottom: 18px;
     }
+    
+    .welcome-content {
+    transform: translateY(-35px);
+}
 
     .welcome-content h1 {
-        font-size: clamp(3.4rem, 15vw, 5rem);
+        font-size: clamp(2.8rem, 12vw, 3.6rem);
+        line-height: 0.99;
     }
 
     .welcome-orb {
-        top: auto;
-        right: -25%;
-        bottom: -26%;
-        width: 70vw;
+        top: -8%;
+        right: -24%;
+        bottom: auto;
+        width: 82vw;
         transform: none;
-        opacity: 0.65;
+        opacity: 0.55;
     }
 
     .welcome-decoration {
         top: auto;
-        right: 0;
+        right: -15%;
         bottom: 13%;
-        width: 95vw;
+        left: auto;
+        width: 120vw;
+        height: 1px;
+        transform: rotate(-35deg);
+    }
+
+    .decoration-sun {
+        top: -12px;
+        left: 19%;
+    }
+
+    .decoration-dot {
+        top: -5px;
+        right: 17%;
     }
 
     .main-content {
@@ -3839,4 +3860,16 @@ html.app-booting .app-shell {
 /* Keep original app layout */
 html.has-started .app-shell {
     display: flex;
+}
+
+html:not(.has-started) {
+    height: 100%;
+    overflow: hidden;
+}
+
+html:not(.has-started) body {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
 }
