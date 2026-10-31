@@ -40,7 +40,7 @@ Follow these steps to run Taskora locally.
 1. Clone the repository:
 
    ```bash
-   git clone YOUR_REPOSITORY_URL
+   git clone https://github.com/pranjalmaurya563/Taskora.git
    ```
 
 2. Open the project folder:
@@ -55,14 +55,14 @@ You can also use the Live Server extension in VS Code for a better development e
 
 ## 📸 Screenshots
 
-Add your project screenshots here.
+### Home Screen
+![Home](screenshots/home.png)
 
-```text
-screenshots/
-├── home.png
-├── dashboard.png
-└── kanban.png
-```
+### Kanban Board
+![Kanban](screenshots/kanban.png)
+
+### Focus Timer
+![Focus Timer](screenshots/focus-timer.png)
 
 ## 🎯 Project Purpose
 
