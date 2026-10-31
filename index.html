@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#10111b">
+    <title>Taskora — Your daily focus</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        if (sessionStorage.getItem("taskora-started") === "true") {
+            document.documentElement.classList.add("has-started", "app-booting");
+        }
+    </script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <section class="welcome-screen" id="welcome-screen" aria-labelledby="welcome-title">
+        <div class="welcome-orb" aria-hidden="true"></div>
+        <div class="welcome-content">
+            <p class="eyebrow"><span class="brand-mark">t</span> TASKORA</p>
+            <p class="welcome-kicker">A calmer way to get things done</p>
+            <h1 id="welcome-title">Make today<br>count<span>.</span></h1>
+            <p class="welcome-copy">Bring your tasks, progress, and good habits into one simple space.</p>
+            <button class="primary-button get-started-button" id="get-started" type="button">
+                Get started <span aria-hidden="true">→</span>
+            </button>
+            <p class="welcome-note">Your day, one small win at a time.</p>
+        </div>
+        <div class="welcome-decoration" aria-hidden="true">
+            <span class="decoration-sun"></span>
+            <span class="decoration-line"></span>
+            <span class="decoration-dot"></span>
+        </div>
+    </section>
+
+    <div class="app-shell" id="app-shell" hidden>
+        <aside class="sidebar">
+            <a class="brand" href="#" aria-label="Taskora home" data-view-link="home">
+                <span class="brand-mark">t</span>
+                <span>taskora</span>
+            </a>
+
+            <p class="nav-label">MENU</p>
+            <nav class="main-nav" aria-label="Main navigation">
+                <button class="nav-link is-active" type="button" data-view-link="home">
+                    <span class="nav-icon" aria-hidden="true">⌂</span> Home
+                </button>
+                <button class="nav-link" type="button" data-view-link="pending">
+                    <span class="nav-icon" aria-hidden="true">◷</span> Pending
+                    <span class="nav-badge" id="pending-badge">0</span>
+                </button>
+                <button class="nav-link" type="button" data-view-link="completed">
+                    <span class="nav-icon" aria-hidden="true">✓</span> Completed
+                </button>
+                <button class="nav-link" type="button" data-view-link="board">
+                    <span class="nav-icon" aria-hidden="true">▦</span> Kanban board
+                </button>
+                <button class="nav-link" type="button" data-view-link="focus">
+                    <span class="nav-icon" aria-hidden="true">◴</span> Focus timer
+                </button>
+                <button class="nav-link" type="button" data-view-link="profile">
+                    <span class="nav-icon" aria-hidden="true">◉</span> Profile
+                </button>
+            </nav>
+
+            <section class="category-sidebar" aria-labelledby="category-sidebar-title">
+                <div class="category-sidebar-heading">
+                    <p class="nav-label" id="category-sidebar-title">CATEGORIES</p>
+                    <button class="category-add-button" id="add-category" type="button" aria-label="Add category">+</button>
+                </div>
+                <ul class="category-nav-list" id="sidebar-categories"></ul>
+            </section>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-tip">
+                    <span class="tip-sparkle" aria-hidden="true">✦</span>
+                    <p>Little by little,<br>one travels far.</p>
+                    <span class="tip-caption">— J.R.R. Tolkien</span>
+                </div>
+                <button class="profile-shortcut" type="button" data-view-link="profile">
+                    <span class="avatar" id="sidebar-avatar">Y</span>
+                    <span class="profile-shortcut-copy">
+                        <strong id="sidebar-name">Your profile</strong>
+                        <small>View your progress</small>
+                    </span>
+                    <span class="shortcut-arrow" aria-hidden="true">↗</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <p class="today-label" id="topbar-date"></p>
+                <button class="topbar-profile" type="button" data-view-link="profile" aria-label="Open profile">
+                    <span class="avatar avatar-small" id="topbar-avatar">Y</span>
+                </button>
+            </header>
+
+            <section class="page-view" id="view-home" data-view="home">
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow" id="home-greeting">YOUR DAY, YOUR PACE</p>
+                        <h1>Good to see you<span>.</span></h1>
+                        <p class="page-subtitle">A little progress adds up. What will you do today?</p>
+                    </div>
+                </div>
+
+                <section class="progress-card" aria-labelledby="progress-title">
+                    <div class="progress-copy">
+                        <div>
+                            <p class="card-eyebrow">YOUR DAILY PROGRESS</p>
+                            <h2 id="progress-title"><span id="progress-percent">0</span><small>%</small> <span class="progress-message" id="progress-message">A fresh start</span></h2>
+                            <p class="progress-summary" id="progress-summary">You have 0 tasks to focus on.</p>
+                        </div>
+                        <div class="progress-ring" id="progress-ring" role="img" aria-label="0% of tasks completed">
+                            <span id="ring-percent">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-track" role="progressbar" aria-label="Tasks completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-track">
+                        <span id="progress-fill"></span>
+                    </div>
+                    <div class="progress-legend">
+                        <span><i class="legend-dot done-dot"></i><strong id="completed-count">0</strong> completed</span>
+                        <span><i class="legend-dot pending-dot"></i><strong id="remaining-count">0</strong> remaining</span>
+                    </div>
+                </section>
+
+                <section class="tasks-panel" aria-labelledby="tasks-title">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="card-eyebrow">STAY ON TRACK</p>
+                            <h2 id="tasks-title">Your tasks</h2>
+                        </div>
+                        <span class="task-total" id="task-total">0 tasks</span>
+                    </div>
+                    <form class="task-form" id="task-form">
+                        <label class="sr-only" for="task-input">Add a task</label>
+                        <span class="input-plus" aria-hidden="true">+</span>
+                        <input id="task-input" name="task" type="text" placeholder="Add a task to your day..." autocomplete="off" maxlength="200" required>
+                        <button class="primary-button add-button" type="submit">Add task</button>
+                        <div class="task-options">
+                            <div class="task-option-field category-option">
+                                <label class="task-option-label" for="task-category">Category</label>
+                                <select class="category-select" id="task-category" name="category">
+                                    <option value="">No category</option>
+                                </select>
+                            </div>
+                            <div class="task-option-field priority-option">
+                                <label class="task-option-label" for="task-priority">Priority</label>
+                                <select class="task-priority-input" id="task-priority" name="priority">
+                                    <option value="low">Low priority</option>
+                                    <option value="medium" selected>Medium priority</option>
+                                    <option value="high">High priority</option>
+                                </select>
+                            </div>
+                            <div class="task-option-field deadline-option">
+                                <label class="task-option-label" for="task-deadline">Due date</label>
+                                <input class="task-deadline-input" id="task-deadline" name="deadline" type="date">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="task-filter-row">
+                        <label for="task-filter">Filter by</label>
+                        <select id="task-filter" class="task-filter">
+                            <option value="all">All categories</option>
+                        </select>
+                        <button class="manage-categories-button" id="manage-categories" type="button">Manage categories</button>
+                    </div>
+                    <ul class="task-list" id="home-task-list" aria-live="polite"></ul>
+                    <p class="empty-state" id="home-empty">Your list is clear. Add a task and make it a great day.</p>
+                </section>
+            </section>
+
+            <section class="page-view secondary-view board-view" id="view-board" data-view="board" hidden>
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow">SEE THE WHOLE PICTURE</p>
+                        <h1>Kanban board<span>.</span></h1>
+                        <p class="page-subtitle">Move tasks through your day, one step at a time.</p>
+                    </div>
+                </div>
+                <div class="kanban-board" id="kanban-board" aria-label="Task status board">
+                    <section class="kanban-column" data-status="todo" aria-labelledby="todo-column-title">
+                        <header class="kanban-column-heading">
+                            <div><span class="status-indicator todo-indicator"></span><h2 id="todo-column-title">To Do</h2></div>
+                            <span class="kanban-count" id="todo-count">0</span>
+                        </header>
+                        <div class="kanban-dropzone" id="todo-column" data-status="todo" aria-label="To Do tasks"></div>
+                    </section>
+                    <section class="kanban-column" data-status="in-progress" aria-labelledby="progress-column-title">
+                        <header class="kanban-column-heading">
+                            <div><span class="status-indicator progress-indicator"></span><h2 id="progress-column-title">In Progress</h2></div>
+                            <span class="kanban-count" id="in-progress-count">0</span>
+                        </header>
+                        <div class="kanban-dropzone" id="in-progress-column" data-status="in-progress" aria-label="In Progress tasks"></div>
+                    </section>
+                    <section class="kanban-column" data-status="completed" aria-labelledby="done-column-title">
+                        <header class="kanban-column-heading">
+                            <div><span class="status-indicator completed-indicator"></span><h2 id="done-column-title">Completed</h2></div>
+                            <span class="kanban-count" id="kanban-completed-count">0</span>
+                        </header>
+                        <div class="kanban-dropzone" id="completed-column" data-status="completed" aria-label="Completed tasks"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="page-view secondary-view focus-view" id="view-focus" data-view="focus" hidden>
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow">MAKE ROOM FOR DEEP WORK</p>
+                        <h1>Focus time<span>.</span></h1>
+                        <p class="page-subtitle">One task, one session, no rush.</p>
+                    </div>
+                </div>
+
+                <div class="focus-layout">
+                    <section class="focus-timer-card" aria-labelledby="timer-heading">
+                        <p class="card-eyebrow">POMODORO TIMER</p>
+                        <h2 class="sr-only" id="timer-heading">Focus timer</h2>
+                        <div class="timer-modes" role="group" aria-label="Timer session type">
+                            <button class="timer-mode is-active" type="button" data-timer-mode="focus">Focus</button>
+                            <button class="timer-mode" type="button" data-timer-mode="shortBreak">Short break</button>
+                            <button class="timer-mode" type="button" data-timer-mode="longBreak">Long break</button>
+                        </div>
+
+                        <div class="timer-circle" id="timer-circle" role="timer" aria-label="25 minutes remaining">
+                            <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+                                <circle class="timer-ring-track" cx="110" cy="110" r="99"></circle>
+                                <circle class="timer-ring-progress" id="timer-ring-progress" cx="110" cy="110" r="99"></circle>
+                            </svg>
+                            <div class="timer-readout">
+                                <span class="timer-time" id="timer-time">25:00</span>
+                                <span class="timer-status" id="timer-status">Ready when you are</span>
+                            </div>
+                        </div>
+
+                        <div class="focus-task-picker">
+                            <label for="focus-task-select">Working on</label>
+                            <select class="task-edit-select" id="focus-task-select">
+                                <option value="">Choose a task</option>
+                            </select>
+                        </div>
+                        <p class="timer-message" id="timer-message" role="status" aria-live="polite"></p>
+
+                        <div class="timer-controls">
+                            <button class="timer-reset-button" id="timer-reset" type="button">Reset</button>
+                            <button class="primary-button timer-start-button" id="timer-start" type="button">
+                                <span aria-hidden="true">▶</span> Start focus
+                            </button>
+                        </div>
+                        <p class="notification-note" id="notification-note">Allow notifications for a reminder when your session ends.</p>
+                    </section>
+
+                    <aside class="focus-stats">
+                        <section class="focus-stat-card">
+                            <span class="focus-stat-icon" aria-hidden="true">✦</span>
+                            <p class="card-eyebrow">COMPLETED SESSIONS</p>
+                            <p class="focus-stat-value" id="focus-session-count">0</p>
+                            <p class="focus-stat-caption">Focus sessions finished</p>
+                        </section>
+                        <section class="focus-stat-card">
+                            <span class="focus-stat-icon focus-time-icon" aria-hidden="true">◷</span>
+                            <p class="card-eyebrow">TOTAL FOCUS TIME</p>
+                            <p class="focus-stat-value"><span id="focus-total-hours">0</span><small>h</small> <span id="focus-total-minutes">0</span><small>m</small></p>
+                            <p class="focus-stat-caption">Time spent in deep work</p>
+                        </section>
+                        <section class="focus-history-card">
+                            <div class="focus-history-heading">
+                                <div>
+                                    <p class="card-eyebrow">YOUR RECENT WORK</p>
+                                    <h2>Session history</h2>
+                                </div>
+                                <span class="task-total" id="focus-history-count">0 sessions</span>
+                            </div>
+                            <ul class="focus-history-list" id="focus-history-list" aria-live="polite"></ul>
+                            <p class="focus-history-empty" id="focus-history-empty">Completed focus sessions will appear here.</p>
+                        </section>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="page-view secondary-view" id="view-category" data-view="category" hidden>
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow">YOUR FOCUS, ORGANIZED</p>
+                        <h1><span id="category-view-title">Category</span><span>.</span></h1>
+                        <p class="page-subtitle" id="category-view-subtitle">Tasks in this category.</p>
+                    </div>
+                </div>
+                <section class="tasks-panel" aria-labelledby="category-tasks-title">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="card-eyebrow">CATEGORY TASKS</p>
+                            <h2 id="category-tasks-title">Tasks</h2>
+                        </div>
+                        <span class="task-total" id="category-total">0 tasks</span>
+                    </div>
+                    <ul class="task-list" id="category-task-list" aria-live="polite"></ul>
+                    <p class="empty-state" id="category-empty">No tasks in this category yet.</p>
+                </section>
+            </section>
+
+            <section class="page-view secondary-view" id="view-pending" data-view="pending" hidden>
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow">ONE THING AT A TIME</p>
+                        <h1>Pending<span>.</span></h1>
+                        <p class="page-subtitle">Your open tasks, ready when you are.</p>
+                    </div>
+                </div>
+                <section class="tasks-panel" aria-labelledby="pending-title">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="card-eyebrow">UP NEXT</p>
+                            <h2 id="pending-title">Still to do</h2>
+                        </div>
+                        <span class="task-total" id="pending-total">0 tasks</span>
+                    </div>
+                    <ul class="task-list" id="pending-task-list" aria-live="polite"></ul>
+                    <p class="empty-state" id="pending-empty">All caught up. Enjoy the breathing room.</p>
+                </section>
+            </section>
+
+            <section class="page-view secondary-view" id="view-completed" data-view="completed" hidden>
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow">LOOK HOW FAR YOU'VE COME</p>
+                        <h1>Completed<span>.</span></h1>
+                        <p class="page-subtitle">Every finished task is a win worth celebrating.</p>
+                    </div>
+                </div>
+                <section class="tasks-panel" aria-labelledby="completed-title">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="card-eyebrow">NICE WORK</p>
+                            <h2 id="completed-title">Done and dusted</h2>
+                        </div>
+                        <span class="task-total" id="completed-total">0 tasks</span>
+                    </div>
+                    <ul class="task-list" id="completed-task-list" aria-live="polite"></ul>
+                    <p class="empty-state" id="completed-empty">Your completed tasks will show up here.</p>
+                </section>
+            </section>
+
+            <section class="page-view secondary-view" id="view-profile" data-view="profile" hidden>
+                <div class="page-heading">
+                    <div>
+                        <p class="eyebrow">YOUR PERSONAL SPACE</p>
+                        <h1>Profile<span>.</span></h1>
+                        <p class="page-subtitle">Your effort, your habits, your story.</p>
+                    </div>
+                </div>
+                <section class="profile-card">
+                    <div class="profile-intro">
+                        <span class="avatar avatar-large" id="profile-avatar">Y</span>
+                        <div>
+                            <p class="card-eyebrow">WELCOME,</p>
+                            <h2 id="profile-display-name">Your profile</h2>
+                            <p class="profile-date" id="profile-current-date"></p>
+                        </div>
+                    </div>
+                    <form class="name-form" id="name-form">
+                        <label for="profile-name">Your name</label>
+                        <div class="name-input-row">
+                            <input id="profile-name" type="text" maxlength="40" placeholder="What should we call you?">
+                            <button class="secondary-button" type="submit">Save name</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="stats-grid" aria-label="Your task and streak statistics">
+                    <article class="stat-card">
+                        <span class="stat-icon stat-purple" aria-hidden="true">✦</span>
+                        <p class="card-eyebrow">CURRENT STREAK</p>
+                        <p class="stat-value"><span id="current-streak">0</span> <small>days</small></p>
+                        <p class="stat-caption">Keep your momentum going</p>
+                    </article>
+                    <article class="stat-card">
+                        <span class="stat-icon stat-orange" aria-hidden="true">↗</span>
+                        <p class="card-eyebrow">BEST STREAK</p>
+                        <p class="stat-value"><span id="best-streak">0</span> <small>days</small></p>
+                        <p class="stat-caption">Your personal best</p>
+                    </article>
+                    <article class="stat-card">
+                        <span class="stat-icon stat-green" aria-hidden="true">✓</span>
+                        <p class="card-eyebrow">TASKS COMPLETED</p>
+                        <p class="stat-value" id="profile-completed-count">0</p>
+                        <p class="stat-caption">Wins on your list</p>
+                    </article>
+                </section>
+
+                <section class="calendar-card" aria-labelledby="calendar-title">
+                    <div class="calendar-heading">
+                        <div>
+                            <p class="card-eyebrow">SHOWING UP MATTERS</p>
+                            <h2 id="calendar-title">Your activity</h2>
+                        </div>
+                        <div class="calendar-month">
+                            <button class="calendar-arrow" id="previous-month" type="button" aria-label="Previous month">‹</button>
+                            <span id="calendar-month-label"></span>
+                            <button class="calendar-arrow" id="next-month" type="button" aria-label="Next month">›</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="Activity calendar"></div>
+                    <div class="calendar-legend"><span><i class="legend-dot activity-dot"></i>Completed a task</span><span class="today-legend"><i></i>Today</span></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <dialog class="category-dialog" id="category-dialog" aria-labelledby="category-dialog-title">
+        <form class="category-dialog-form" id="category-form">
+            <div class="dialog-heading">
+                <div>
+                    <p class="card-eyebrow">MAKE IT YOURS</p>
+                    <h2 id="category-dialog-title">New category</h2>
+                </div>
+                <button class="dialog-close" id="close-category-dialog" type="button" aria-label="Close">×</button>
+            </div>
+            <input id="category-id" type="hidden">
+            <label class="category-field-label" for="category-name">Category name</label>
+            <input class="category-name-input" id="category-name" type="text" maxlength="32" placeholder="e.g. Health" required>
+            <label class="category-field-label" for="category-color">Choose a color</label>
+            <div class="color-input-row">
+                <input id="category-color" type="color" value="#a99aff">
+                <span>Pick a color to recognize this category.</span>
+            </div>
+            <p class="category-form-error" id="category-form-error" role="alert" hidden></p>
+            <div class="category-dialog-actions">
+                <button class="delete-category-button" id="delete-category" type="button" hidden>Delete category</button>
+                <span class="dialog-action-spacer"></span>
+                <button class="secondary-button" id="cancel-category" type="button">Cancel</button>
+                <button class="primary-button add-button" type="submit">Save category</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="category-dialog task-edit-dialog" id="task-edit-dialog" aria-labelledby="task-edit-title">
+        <form class="category-dialog-form" id="task-edit-form">
+            <div class="dialog-heading">
+                <div>
+                    <p class="card-eyebrow">KEEP IT UP TO DATE</p>
+                    <h2 id="task-edit-title">Edit task</h2>
+                </div>
+                <button class="dialog-close" id="close-task-dialog" type="button" aria-label="Close">×</button>
+            </div>
+            <input id="edit-task-id" type="hidden">
+            <label class="category-field-label" for="edit-task-title">Task title</label>
+            <input class="category-name-input" id="edit-task-title" type="text" maxlength="200" required>
+            <label class="category-field-label" for="edit-task-category">Category</label>
+            <select class="task-edit-select" id="edit-task-category"></select>
+            <div class="task-edit-fields">
+                <div>
+                    <label class="category-field-label" for="edit-task-priority">Priority</label>
+                    <select class="task-edit-select" id="edit-task-priority">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="category-field-label" for="edit-task-deadline">Deadline</label>
+                    <input class="category-name-input" id="edit-task-deadline" type="date">
+                </div>
+            </div>
+            <div class="category-dialog-actions">
+                <span class="dialog-action-spacer"></span>
+                <button class="secondary-button" id="cancel-task-edit" type="button">Cancel</button>
+                <button class="primary-button add-button" type="submit">Save task</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+</html>
