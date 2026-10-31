@@ -4,6 +4,10 @@ Taskora is a responsive task management web application designed to help users o
 
 It provides a clean interface with useful productivity features to make everyday task management easier.
 
+## 🌐 Live Demo
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://pranjalmaurya563.github.io/Taskora/)
+
 ## ✨ Features
 
 - **Task Management:** Add, edit, delete, and manage tasks.
