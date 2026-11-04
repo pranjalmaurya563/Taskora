@@ -1738,12 +1738,23 @@ function renderTasks() {
             (completedTasks.length / totalTasks) * 100
         );
 
-    const filteredTasks =
-        taskFilter.value && taskFilter.value !== "all"
-            ? state.tasks.filter(
-                (task) => task.categoryId === taskFilter.value
-            )
-            : state.tasks;
+    const filteredTasks = state.tasks.filter((task) => {
+    // Completed tasks ko Home page par mat dikhao
+    if (task.completed) {
+        return false;
+    }
+
+    // Category filter maintain rakho
+    if (
+        taskFilter.value &&
+        taskFilter.value !== "all" &&
+        task.categoryId !== taskFilter.value
+    ) {
+        return false;
+      }
+
+      return true;
+    });
 
     renderTaskList(
         "home-task-list",
